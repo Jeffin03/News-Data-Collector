@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Data Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card .label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .stories {
+            display: grid;
+            gap: 15px;
+        }
+
+        .story-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #667eea;
+        }
+
+        .story-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .story-card.hn {
+            border-left-color: #ff6600;
+        }
+
+        .story-card.tech {
+            border-left-color: #0084ff;
+        }
+
+        .story-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .story-title a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .story-title a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .story-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge.hn {
+            background-color: #ff6600;
+        }
+
+        .badge.tech {
+            background-color: #0084ff;
+        }
+
+        .meta-item {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .meta-item strong {
+            color: #333;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+        }
+
+        .empty-state h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .story-card {
+                padding: 15px;
+            }
+
+            .story-title {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📰 News Data Dashboard</h1>
+            <p>Latest tech news and Hacker News stories</p>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="dateFilter">📅 Filter by Date</label>
+                <select id="dateFilter" onchange="filterData()">
+                    <option value="">All Dates</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sourceFilter">🔗 Filter by Source</label>
+                <select id="sourceFilter" onchange="filterData()">
+                    <option value="">All Sources</option>
+                    <option value="Hacker News">Hacker News</option>
+                    <option value="Tech News">Tech News</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchFilter">🔍 Search</label>
+                <input type="text" id="searchFilter" placeholder="Search stories..." onkeyup="filterData()">
+            </div>
+            <div class="filter-group">
+                <label for="sortFilter">⭐ Sort by</label>
+                <select id="sortFilter" onchange="filterData()">
+                    <option value="score-desc">Score (High to Low)</option>
+                    <option value="score-asc">Score (Low to High)</option>
+                    <option value="date-desc">Date (Newest)</option>
+                    <option value="date-asc">Date (Oldest)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" id="totalStories">0</div>
+                <div class="label">Total Stories</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="avgScore">0</div>
+                <div class="label">Average Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="uniqueSources">0</div>
+                <div class="label">Sources</div>
+            </div>
+        </div>
+
+        <div id="storiesContainer" class="stories"></div>
+
+        <footer>
+            <p>News Data Collector • Data collected via GitHub Actions</p>
+            <p id="lastUpdate"></p>
+        </footer>
+    </div>
+
+    <script>
+        let allStories = [];
+
+        async function loadCSV() {
+            try {
+                const response = await fetch('NewsData.csv');
+                const text = await response.text();
+                parseCSV(text);
+                populateFilters();
+                filterData();
+            } catch (error) {
+                console.error('Error loading CSV:', error);
+                document.getElementById('storiesContainer').innerHTML = 
+                    '<div class="empty-state"><h2>⚠️ No data available</h2><p>NewsData.csv not found or empty</p></div>';
+            }
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length <= 1) return;
+
+            const headers = lines[0].split(',').map(h => h.trim());
+            allStories = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const values = lines[i].split(',');
+                const story = {};
+                headers.forEach((header, idx) => {
+                    story[header] = values[idx] ? values[idx].trim() : '';
+                });
+                if (story.Title) allStories.push(story);
+            }
+
+            allStories.reverse(); // Most recent first
+        }
+
+        function populateFilters() {
+            const dates = [...new Set(allStories.map(s => s.Date))].sort().reverse();
+            const dateFilter = document.getElementById('dateFilter');
+            dates.forEach(date => {
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = date;
+                dateFilter.appendChild(option);
+            });
+        }
+
+        function filterData() {
+            const dateFilter = document.getElementById('dateFilter').value;
+            const sourceFilter = document.getElementById('sourceFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+            const sortFilter = document.getElementById('sortFilter').value;
+
+            let filtered = allStories.filter(story => {
+                const matchDate = !dateFilter || story.Date === dateFilter;
+                const matchSource = !sourceFilter || story.Source === sourceFilter;
+                const matchSearch = !searchFilter || 
+                    story.Title.toLowerCase().includes(searchFilter) ||
+                    (story.Source && story.Source.toLowerCase().includes(searchFilter));
+                return matchDate && matchSource && matchSearch;
+            });
+
+            // Sort
+            filtered.sort((a, b) => {
+                switch (sortFilter) {
+                    case 'score-desc':
+                        return parseInt(b.Score || 0) - parseInt(a.Score || 0);
+                    case 'score-asc':
+                        return parseInt(a.Score || 0) - parseInt(b.Score || 0);
+                    case 'date-asc':
+                        return new Date(a.Date) - new Date(b.Date);
+                    default: // date-desc
+                        return new Date(b.Date) - new Date(a.Date);
+                }
+            });
+
+            displayStories(filtered);
+            updateStats(filtered);
+        }
+
+        function displayStories(stories) {
+            const container = document.getElementById('storiesContainer');
+
+            if (stories.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h2>No stories found</h2><p>Try adjusting your filters</p></div>';
+                return;
+            }
+
+            container.innerHTML = stories.map(story => {
+                const isHN = story.Source.includes('Hacker');
+                const badgeClass = isHN ? 'hn' : 'tech';
+                const cardClass = isHN ? 'hn' : 'tech';
+                
+                const titleHTML = story.URL && story.URL !== '#' && story.URL.trim()
+                    ? `<a href="${story.URL}" target="_blank">${story.Title}</a>`
+                    : story.Title;
+
+                return `
+                    <div class="story-card ${cardClass}">
+                        <div class="story-title">${titleHTML}</div>
+                        <div class="story-meta">
+                            <span class="badge ${badgeClass}">${story.Source}</span>
+                            <span class="meta-item">📅 <strong>${story.Date}</strong></span>
+                            <span class="meta-item">⭐ <strong>${story.Score}</strong></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats(stories) {
+            document.getElementById('totalStories').textContent = stories.length;
+            
+            const avgScore = stories.length > 0
+                ? Math.round(stories.reduce((sum, s) => sum + parseInt(s.Score || 0), 0) / stories.length)
+                : 0;
+            document.getElementById('avgScore').textContent = avgScore;
+            
+            const sources = new Set(stories.map(s => s.Source));
+            document.getElementById('uniqueSources').textContent = sources.size;
+
+            if (allStories.length > 0) {
+                const lastDate = allStories[0].Date;
+                document.getElementById('lastUpdate').textContent = `Last updated: ${lastDate}`;
+            }
+        }
+
+        // Load data on page load
+        loadCSV();
+    </script>
+</body>
+</html>
