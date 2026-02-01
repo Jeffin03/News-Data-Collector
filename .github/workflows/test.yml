@@ -49,11 +49,8 @@ jobs:
         fi
       
     - name: Test function availability
-      run: python -c "
-from Collector import get_hackernews_stories, get_tech_news
-print('✓ get_hackernews_stories function available')
-print('✓ get_tech_news function available')
-"
+      run: |
+        python -c "from Collector import get_hackernews_stories, get_tech_news; print('✓ get_hackernews_stories function available'); print('✓ get_tech_news function available')"
       
     - name: Summary
       run: echo "✓ All tests completed successfully!"
