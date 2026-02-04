@@ -283,20 +283,50 @@
 
     <script>
         let allStories = [];
+        let lastCSVContent = '';
+        let autoRefreshInterval = null;
 
-        async function loadCSV() {
+        async function loadCSV(checkForUpdates = false) {
             try {
-                const response = await fetch('NewsData.csv');
+                // Add timestamp to bypass cache
+                const timestamp = new Date().getTime();
+                const response = await fetch(`NewsData.csv?t=${timestamp}`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const text = await response.text();
+                
+                // Check if data has changed
+                if (checkForUpdates && text === lastCSVContent) {
+                    return false; // No updates
+                }
+                
+                lastCSVContent = text;
                 parseCSV(text);
                 populateFilters();
                 filterData();
+                return true; // Data was updated
             } catch (error) {
                 console.error('Error loading CSV:', error);
                 document.getElementById('storiesContainer').innerHTML = 
                     '<div class="empty-state"><h2>⚠️ No data available</h2><p>NewsData.csv not found or empty</p></div>';
+                return false;
             }
+        }
+
+        function startAutoRefresh(intervalSeconds = 30) {
+            // Clear any existing interval
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            // Refresh every X seconds
+            autoRefreshInterval = setInterval(async () => {
+                const updated = await loadCSV(true);
+                if (updated) {
+                    console.log('Dashboard updated with new data');
+                }
+            }, intervalSeconds * 1000);
+            
+            console.log(`Auto-refresh enabled: checking every ${intervalSeconds} seconds`);
         }
 
         // Robust CSV line parser (handles quoted fields and escaped quotes)
@@ -463,6 +493,9 @@
 
         // Load data on page load
         loadCSV();
+        
+        // Start auto-refresh (checks for updates every 30 seconds)
+        startAutoRefresh(30);
     </script>
 </body>
 </html>
