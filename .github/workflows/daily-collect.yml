@@ -34,7 +34,7 @@ jobs:
       if: ${{ always() }}
       uses: peter-evans/create-pull-request@v5
       with:
-        commit-message: "chore: update news data - ${{ github.event.head_commit.timestamp || 'scheduled' }}"
+        commit-message: "sync: news data - ${{ github.event.head_commit.timestamp || 'scheduled' }}"
         title: "🔄 Daily News Data Update - ${{ github.event.head_commit.timestamp || format('{0:yyyy-MM-dd}', now()) }}"
         body: |
           ## Automated Daily News Collection
@@ -56,5 +56,5 @@ jobs:
         branch: news-data-update-${{ github.run_id }}
         delete-branch: true
         labels: "automated,news-data"
-        reviewers: ""
+        reviewers: "Jeffin03"
         draft: false
