@@ -2875,5 +2875,12 @@
     "topic": "PowerEdge VRTX",
     "definition": "Dell PowerEdge VRTX is a computer hardware product line from Dell. It is a mini-blade chassis with built-in storage system. The VRTX comes in two models: a 19\" rack version that is 5 rack units high or as a stand-alone tower system.",
     "url": "https://en.wikipedia.org/wiki/PowerEdge_VRTX"
+  },
+  {
+    "date_added": "2026-09-05",
+    "category": "Artificial Intelligence",
+    "topic": "MindsDB",
+    "definition": "MindsDB is an open-source artificial intelligence software platform that enables organizations to analyze both structured and unstructured data without requiring it to be moved into a separate storage system. It connects to existing databases, business applications, and document-based sources, allowing information to be queried directly from its current location.",
+    "url": "https://en.wikipedia.org/wiki/MindsDB"
   }
 ]
