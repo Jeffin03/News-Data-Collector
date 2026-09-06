@@ -2889,5 +2889,12 @@
     "topic": "Artificial brain",
     "definition": "An artificial brain is software and hardware with cognitive abilities similar to those of the animal or human brain.",
     "url": "https://en.wikipedia.org/wiki/Artificial_brain"
+  },
+  {
+    "date_added": "2026-09-06",
+    "category": "Cryptography",
+    "topic": "End-to-end encryption",
+    "definition": "End-to-end encryption (E2EE) is a method of implementing a secure communication system where only the sender and intended recipient can read the messages. No one else, including the system provider, telecom providers, Internet providers or malicious actors, can access the cryptographic keys needed to read or send messages.",
+    "url": "https://en.wikipedia.org/wiki/End-to-end_encryption"
   }
 ]
